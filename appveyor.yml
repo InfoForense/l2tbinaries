@@ -1,0 +1,31 @@
+environment:
+  matrix:
+  - DESCRIPTION: "l2tbinaries builds on Windows with Python 3.8 32-bit"
+    TARGET: l2tbinaries
+    MACHINE_TYPE: "x86"
+    PYTHON: "C:\\Python38"
+  - DESCRIPTION: "l2tbinaries builds on Windows with Python 3.8 64-bit"
+    TARGET: l2tbinaries
+    MACHINE_TYPE: "amd64"
+    PYTHON: "C:\\Python38-x64"
+  - DESCRIPTION: "Source on Windows with Python 3.8 32-bit"
+    TARGET: gitsource
+    MACHINE_TYPE: "x86"
+    PYTHON: "C:\\Python38"
+  - DESCRIPTION: "Source on Windows with Python 3.8 64-bit"
+    TARGET: gitsource
+    MACHINE_TYPE: "amd64"
+    PYTHON: "C:\\Python38-x64"
+
+install:
+- cmd: '"C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x86 /release'
+- cmd: "%PYTHON%\\python.exe -m pip install --upgrade pip"
+- cmd: "%PYTHON%\\python.exe -m pip install pypiwin32 WMI"
+- cmd: "%PYTHON%\\python.exe %PYTHON%\\Scripts\\pywin32_postinstall.py -install"
+- cmd: git clone https://github.com/log2timeline/l2tdevtools.git ..\l2tdevtools
+- ps: .\config\appveyor\install.ps1
+
+build: off
+
+test_script:
+- ps: .\config\appveyor\runtests.ps1
