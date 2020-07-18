@@ -29,12 +29,8 @@ then
 		# Clone the latest tagged version of Plaso
 		docker exec ${CONTAINER_NAME} sh -c "LATEST_TAG=`git ls-remote --tags https://github.com/log2timeline/plaso.git | sort -k2 | tail -n1 | sed 's?^.*refs/tags/??'` && git clone -b \${LATEST_TAG} https://github.com/log2timeline/plaso.git";
 
-		# Clone the latest tagged version of Timesketch
-		docker exec ${CONTAINER_NAME} sh -c "LATEST_TAG=`git ls-remote --tags https://github.com/google/timesketch.git | sort -k2 | tail -n1 | sed 's?^.*refs/tags/??'` && git clone -b \${LATEST_TAG} https://github.com/google/timesketch.git";
 	else
 		docker exec ${CONTAINER_NAME} sh -c "git clone https://github.com/log2timeline/plaso.git";
-
-		docker exec ${CONTAINER_NAME} sh -c "git clone https://github.com/google/timesketch.git";
 	fi
 	if test "${TARGET}" = "pylint3";
 	then
@@ -50,17 +46,8 @@ then
 			# TODO: remove the need for setting DEBIAN_FRONTEND
 			docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "cd plaso && ./config/linux/ubuntu_install_plaso.sh --include-test";
 
-			# Install Timesketch dependencies
-			# TODO: rename script to ./config/linux/ubuntu_install_timesketch.sh
-			# TODO: remove the need for setting DEBIAN_FRONTEND
-			docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "cd timesketch && ./config/linux/gift_ppa_install.sh --include-test";
-
 			# Run Plaso tests
 			docker exec ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "cd plaso && python3 ./run_tests.py";
-
-			# Run Timesketch tests
-			docker exec ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "ln -s /usr/bin/nosetests3 /usr/bin/nosetests";
-			docker exec ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "cd timesketch && python3 ./run_tests.py";
 		else
 			docker exec ${CONTAINER_OPTIONS} ${CONTAINER_NAME} sh -c "cd plaso && python3 /usr/bin/log2timeline.py --status_view linear test.plaso test_data/image.qcow2";
 
