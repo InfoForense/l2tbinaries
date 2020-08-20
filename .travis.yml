@@ -4,13 +4,6 @@ os: linux
 dist: bionic
 jobs:
   include:
-  - name: "GIFT COPR builds on Fedora 30 (Docker) with Python 3.7"
-    env: FEDORA_VERSION="30"
-    group: edge
-    language: python
-    python: 3.7
-    services:
-    - docker
   - name: "GIFT COPR builds on Fedora 31 (Docker) with Python 3.7"
     env: FEDORA_VERSION="31"
     group: edge
