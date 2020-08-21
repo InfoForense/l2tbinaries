@@ -5,7 +5,19 @@ $ExitFailure = 1
 
 Try
 {
-	$Output = Invoke-Expression -Command "git clone https://github.com/log2timeline/plaso.git 2>&1"
+	If ($env:APPVEYOR_REPO_BRANCH -eq "master")
+	{
+		$Tags = Invoke-Expression -Command "git ls-remote --tags https://github.com/log2timeline/plaso.git"
+		$Tags = $Tags | Sort-Object { [string]($_ -Split '\s+')[-1] } -Descending
+
+		$LatestTag = (($Tags -Split '\n')[0] -Split 'refs/tags/')[1]
+
+		$Output = Invoke-Expression -Command "git clone -b ${LatestTag} https://github.com/log2timeline/plaso.git 2>&1"
+	}
+	Else
+	{
+		$Output = Invoke-Expression -Command "git clone https://github.com/log2timeline/plaso.git 2>&1"
+	}
 	If (${LastExitCode} -ne ${ExitSuccess}) {Throw}
 
 	# Out-String is used below to make sure new lines are preserved in the output.
